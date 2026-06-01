@@ -58,7 +58,7 @@
   amazon.aws.ec2_instance:
     name: "{{ item }}-{{ env }}-roboshop" # mongodb-dev-roboshop
     state: absent
-    force: true
+    # force: true
   loop: "{{ backend_instances + db_instances }}"
   when:
     - action == "delete"

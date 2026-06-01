@@ -4,7 +4,7 @@
     state: present
     region: "{{ region }}"
     image_id: "{{ image }}"
-    security_group: "{{ sg_id }}"
+    security_groups: "{{ sg_id }}"
     instance_type: "{{ instance_type }}"
     tags: "{{ backend_tags if item in backend_instances else db_tags}}"
     wait: true

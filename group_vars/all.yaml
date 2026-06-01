@@ -1,0 +1,31 @@
+image: "ami-0220d79f3f480ecf5"
+region: "us-east-1"
+sg_id: ["sg-0e3e5d0160ba94b0b"]
+instance_type: "t2.small"
+backend_instances:
+  - catalogue
+  - user
+  - shipping
+  - cart
+  - frontend
+db_instances:
+  - mongodb
+  - mysql
+  - redis
+env: "dev"
+backend_tags: 
+  course: ansible
+  project: roboshop
+  environment: "{{ env }}"
+  deployment: ansible
+  tier: backend
+db_tags:
+  course: ansible
+  project: roboshop
+  environment: "{{ env }}"
+  deployment: ansible
+  tier: database
+
+# Route53 record variables to use
+zone_id: "Z032594897Q2I0KZ7GR1"
+domain_name: "rkak87.online"

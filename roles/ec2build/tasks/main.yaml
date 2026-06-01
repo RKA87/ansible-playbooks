@@ -1,0 +1,36 @@
+- name: aws ec2 instance build with parameters
+  amazon.aws.ec2_instance:
+    name: "{{ item }}-{{ env }}-roboshop" # mongodb-dev-roboshop
+    state: present
+    image_id: "{{ image }}"
+    security_group: "{{ sg_id }}"
+    instance_type: "{{ instance_type }}"
+    tags: "{{ backend_tags if item in backend_instances else db_tags}}"
+    wait: true
+    wait_timeout: 300
+  loop: "{{ backend_instances + db_instances }}"
+  register: ec2_output
+  when:
+    - action == "create"
+
+- name: display ec2 output
+  ansible.builtin.debug:
+    # msg: "instance name: {{ item.item }}\npublic_ip: {{ item.instances[0].public_ip_address }}\nprivate_ip: {{ item.instances[0].private_ip_address }} "
+    msg: |
+      instance name: {{ item.item }}
+      public_ip: {{ item.instances[0].public_ip_address }}
+      private_ip: {{ item.instances[0].private_ip_address }}
+  loop: "{{ ec2_output.results }}"
+
+- name: create route 53 record
+  amazon.aws.route53:
+    state: present
+    type: "A"
+    ttl: 10
+    wait: true
+    zone: "{{ zone_id }}"
+    record: "{{ item.item }}-{{ env}}.{{ domain_name }}" #mongodb-dev.rkak87.online
+    value: "{{ item.instances[0].public_ip_address if item.item == 'frontend' else item.instances[0].private_ip_address }}"
+  loop: "{{ ec2_output.results }}"
+  when:
+    - action == "create"

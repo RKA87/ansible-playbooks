@@ -1,0 +1,10 @@
+- name: aws ec2 instance build for roboshop
+  hosts: local
+  connection: local
+  become: true
+  tasks:
+    - name: display ec2 instane build message
+      ansible.builtin.debug:
+        msg: "Hi, ec2 instance build initiated"
+  roles:
+    - ec2build

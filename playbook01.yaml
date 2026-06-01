@@ -1,5 +1,5 @@
 - name: playbook to install the nginx and start service
-  hosts: web
+  hosts: local
   become: true
   tasks:
 

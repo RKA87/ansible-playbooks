@@ -34,3 +34,27 @@
   loop: "{{ ec2_output.results }}"
   when:
     - action == "create"
+
+# Now destroying the route 53 records and follows on instances when action=delete
+
+- name: delete route 53 record
+  amazon.aws.route53:
+    state: absent
+    type: "A"
+    ttl: 10
+    wait: true
+    zone: "{{ zone_id }}"
+    record: "{{ item.item }}-{{ env}}.{{ domain_name }}" #mongodb-dev.rkak87.online
+    # value: "{{ item.instances[0].public_ip_address if item.item == 'frontend' else item.instances[0].private_ip_address }}"
+  loop: "{{ backend_instances + db_instances }}"
+  when:
+    - action == "delete"
+
+- name: delete aws ec2 instances
+  amazon.aws.ec2_instance:
+    name: "{{ item }}-{{ env }}-roboshop" # mongodb-dev-roboshop
+    state: absent
+    force: true
+  loop: "{{ backend_instances + db_instances }}"
+  when:
+    - action == "delete"

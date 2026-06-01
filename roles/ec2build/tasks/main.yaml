@@ -22,6 +22,8 @@
       public_ip: {{ item.instances[0].public_ip_address }}
       private_ip: {{ item.instances[0].private_ip_address }}
   loop: "{{ ec2_output.results }}"
+  when:
+    - action == "create"
 
 - name: create route 53 record
   amazon.aws.route53:

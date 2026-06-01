@@ -1,0 +1,27 @@
+- name: "ram kumar"
+  dob: "09-25-1991"
+  mobno: 9848295284
+  addresses:
+  - flatno: 104
+    type: "permanent"
+    street: "gandhistreet"
+    city: "nellore"
+
+  - flatno: 105
+    type: "temporary"
+    street: "gandhistreet"
+    city: "nellore"
+
+- name: "suresh kumar"
+  dob: "09-25-1992"
+  mobno: 984829528134
+  addresses:
+  - flatno: 106
+    type: "permanent"
+    street: "gandhistreet"
+    city: "nellore"
+
+  - flatno: 107
+    type: "temporary"
+    street: "gandhistreet"
+    city: "nellore"

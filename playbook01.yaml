@@ -1,0 +1,19 @@
+- name: playbook to install the nginx and start service
+  hosts: web
+  become: true
+  tasks:
+
+    - name: install nginx
+      ansible.builtin.package:
+        name: nginx
+        state: present
+    
+    - name: print message of nginx package
+      ansible.builtin.debug:
+        msg: nginx installed successfully
+    
+    - name: start nginx service
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true

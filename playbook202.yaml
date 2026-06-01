@@ -1,0 +1,15 @@
+- name: ansible conditions
+  hosts: local
+  connection: local
+  become: true
+  vars:
+    - myvar: "hello"
+
+  tasks:
+    - name: print hello
+      ansible.builtin.debug:
+        msg: "variable check: {{ myvar }}"
+    
+    - name: pass through argument
+      ansible.builtin.debug:
+        msg: "passed argument: {{ item }}"

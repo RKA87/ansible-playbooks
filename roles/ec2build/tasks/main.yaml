@@ -34,6 +34,7 @@
     zone: "{{ domain_name }}"
     # hosted_zone_id: "{{ zone_id }}"
     record: "{{ item.item }}-{{ env}}.{{ domain_name }}" #mongodb-dev.rkak87.online
+    overwrite: true
     value: "{{ item.instances[0].public_ip_address if item.item == 'frontend' else item.instances[0].private_ip_address }}"
   loop: "{{ ec2_output.results }}"
   when:

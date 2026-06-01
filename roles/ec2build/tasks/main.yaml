@@ -48,7 +48,7 @@
     ttl: 10
     wait: true
     zone: "{{ domain_name }}"
-    record: "{{ item.item }}-{{ env}}.{{ domain_name }}" #mongodb-dev.rkak87.online
+    record: "{{ item }}-{{ env}}.{{ domain_name }}" #mongodb-dev.rkak87.online
     # value: "{{ item.instances[0].public_ip_address if item.item == 'frontend' else item.instances[0].private_ip_address }}"
   loop: "{{ backend_instances + db_instances }}"
   when:

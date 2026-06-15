@@ -1,0 +1,65 @@
+- name: aws ec2 instance build with parameters
+  amazon.aws.ec2_instance:
+    name: "{{ item }}-{{ env }}-roboshop" # mongodb-dev-roboshop
+    state: present
+    region: "{{ region }}"
+    image_id: "{{ image }}"
+    security_groups: "{{ sg_id }}"
+    instance_type: "{{ instance_type }}"
+    tags: "{{ backend_tags if item in backend_instances else db_tags}}"
+    wait: true
+    wait_timeout: 300
+  loop: "{{ backend_instances + db_instances }}"
+  register: ec2_output
+  when:
+    - action == "create"
+
+- name: display ec2 output
+  ansible.builtin.debug:
+    # msg: "instance name: {{ item.item }}\npublic_ip: {{ item.instances[0].public_ip_address }}\nprivate_ip: {{ item.instances[0].private_ip_address }} "
+    msg: |
+      instance name: {{ item.item }}
+      public_ip: {{ item.instances[0].public_ip_address }}
+      private_ip: {{ item.instances[0].private_ip_address }}
+  loop: "{{ ec2_output.results }}"
+  when:
+    - action == "create"
+
+- name: create route 53 record
+  amazon.aws.route53:
+    state: present
+    type: "A"
+    ttl: 10
+    wait: true
+    zone: "{{ domain_name }}"
+    # hosted_zone_id: "{{ zone_id }}"
+    record: "{{ item.item }}-{{ env}}.{{ domain_name }}" #mongodb-dev.rkak87.online
+    overwrite: true
+    value: "{{ item.instances[0].public_ip_address if item.item == 'frontend' else item.instances[0].private_ip_address }}"
+  loop: "{{ ec2_output.results }}"
+  when:
+    - action == "create"
+
+# Now destroying the route 53 records and follows on instances when action=delete
+
+- name: delete route 53 record
+  amazon.aws.route53:
+    state: absent
+    type: "A"
+    ttl: 10
+    wait: true
+    zone: "{{ domain_name }}"
+    record: "{{ item }}-{{ env}}.{{ domain_name }}" #mongodb-dev.rkak87.online
+    # value: "{{ item.instances[0].public_ip_address if item.item == 'frontend' else item.instances[0].private_ip_address }}"
+  loop: "{{ backend_instances + db_instances }}"
+  when:
+    - action == "delete"
+
+- name: delete aws ec2 instances
+  amazon.aws.ec2_instance:
+    name: "{{ item }}-{{ env }}-roboshop" # mongodb-dev-roboshop
+    state: absent
+    # force: true
+  loop: "{{ backend_instances + db_instances }}"
+  when:
+    - action == "delete"

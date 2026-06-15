@@ -1,0 +1,9 @@
+- name: EC2 Instance Build
+  hosts: local
+  connection: local
+  tasks:
+    - name: display message
+      ansible.builtin.debug:
+        msg: "EC2 Instance Build using Ansible"
+  roles:
+    - ec2_build
